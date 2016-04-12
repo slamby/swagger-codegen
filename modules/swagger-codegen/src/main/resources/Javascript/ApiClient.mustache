@@ -39,7 +39,8 @@
      * The authentication methods to be included for all API calls.
      * @type {Array.<String>}
      */
-{{/emitJSDoc}}{{=< >=}}    this.authentications = {<#authMethods><#isBasic>
+{{/emitJSDoc}}{{=< >=}}    this.authentications = {
+      'slamby': {type: 'slamby'}<#authMethods><#isBasic>
       '<name>': {type: 'basic'}</isBasic><#isApiKey>
       '<name>': {type: 'apiKey', 'in': <#isKeyInHeader>'header'</isKeyInHeader><^isKeyInHeader>'query'</isKeyInHeader>, name: '<keyParamName>'}</isApiKey><#isOAuth>
       '<name>': {type: 'oauth2'}</isOAuth><#hasMore>,</hasMore></authMethods>
@@ -58,6 +59,13 @@
      * @default 60000
      */
     this.timeout = 60000;
+    
+    /**
+     * The DataSet used with all API calls.
+     * @type {String}
+     * @default ''
+     */
+    this.dataSet = '';
   };
 
 {{#emitJSDoc}}  /**
@@ -278,6 +286,11 @@
             request.set({'Authorization': 'Bearer ' + auth.accessToken});
           }
           break;
+        case 'slamby':
+          if (auth.apiKey) {
+            request.set({'Authorization': 'Slamby ' + auth.apiKey});
+          }
+          break;
         default:
           throw new Error('Unknown authentication type: ' + auth.type);
       }
@@ -347,7 +360,9 @@
     request.query(this.normalizeParams(queryParams));
 
     // set header parameters
-    request.set(this.defaultHeaders).set(this.normalizeParams(headerParams));
+    request.set(this.defaultHeaders)
+           .set(this.normalizeParams(headerParams))
+           .set({'X-DataSet': this.dataSet});
 
     // set request timeout
     request.timeout(this.timeout);
