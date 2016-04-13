@@ -271,7 +271,11 @@ class ObjectSerializer
             error_log("[INFO] Written $byte_written byte to $filename. Please move the file to a proper folder or delete the temp file after processing.\n", 3, Configuration::getDefaultConfiguration()->getDebugFile());
             return $deserialized;
  
-        } else {
+        }
+        elseif ($class === '\Swagger\Client\Model\Object') {
+            return $data;
+        } 
+        else {
             // If a discriminator is defined and points to a valid subclass, use it.
             if (!empty($discriminator) && isset($data->{$discriminator}) && is_string($data->{$discriminator})) {
                 $subclass = '\{{invokerPackage}}\Model\\' . $data->{$discriminator};
