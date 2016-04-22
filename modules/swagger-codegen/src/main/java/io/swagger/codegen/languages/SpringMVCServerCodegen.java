@@ -32,18 +32,6 @@ public class SpringMVCServerCodegen extends JavaClientCodegen {
         additionalProperties.put(CodegenConstants.API_PACKAGE, apiPackage);
         additionalProperties.put(CONFIG_PACKAGE, configPackage);
 
-        languageSpecificPrimitives = new HashSet<String>(
-                Arrays.asList(
-                        "byte[]",
-                        "String",
-                        "boolean",
-                        "Boolean",
-                        "Double",
-                        "Integer",
-                        "Long",
-                        "Float")
-        );
-
         cliOptions.add(new CliOption(CONFIG_PACKAGE, "configuration package for generated code"));
 
         supportedLibraries.clear();
@@ -70,6 +58,11 @@ public class SpringMVCServerCodegen extends JavaClientCodegen {
     @Override
     public void processOpts() {
         super.processOpts();
+
+        // clear model and api doc template as this codegen
+        // does not support auto-generated markdown doc at the moment
+        modelDocTemplateFiles.remove("model_doc.mustache");
+        apiDocTemplateFiles.remove("api_doc.mustache");
 
         if (additionalProperties.containsKey(CONFIG_PACKAGE)) {
             this.setConfigPackage((String) additionalProperties.get(CONFIG_PACKAGE));

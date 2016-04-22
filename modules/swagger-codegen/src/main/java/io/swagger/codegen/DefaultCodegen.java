@@ -1397,6 +1397,7 @@ public class DefaultCodegen {
         op.path = path;
         op.operationId = toOperationId(operationId);
         op.summary = escapeText(operation.getSummary());
+        op.unescapedNotes = operation.getDescription();
         op.notes = escapeText(operation.getDescription());
         op.tags = operation.getTags();
         op.hasConsumes = false;
@@ -1578,33 +1579,20 @@ public class DefaultCodegen {
 
 
                 allParams.add(p);
+                // Issue #2561 (neilotoole) : Moved setting of is<Type>Param flags
+                // from here to fromParameter().
                 if (param instanceof QueryParameter) {
-                    p.isQueryParam = new Boolean(true);
                     queryParams.add(p.copy());
                 } else if (param instanceof PathParameter) {
-                    p.required = true;
-                    p.isPathParam = new Boolean(true);
                     pathParams.add(p.copy());
                 } else if (param instanceof HeaderParameter) {
-                    p.isHeaderParam = new Boolean(true);
                     headerParams.add(p.copy());
                 } else if (param instanceof CookieParameter) {
-                    p.isCookieParam = new Boolean(true);
                     cookieParams.add(p.copy());
                 } else if (param instanceof BodyParameter) {
-                    p.isBodyParam = new Boolean(true);
-                    p.isBinary = p.dataType.toLowerCase().startsWith("byte");
                     bodyParam = p;
                     bodyParams.add(p.copy());
                 } else if (param instanceof FormParameter) {
-                    if ("file".equalsIgnoreCase(((FormParameter) param).getType())) {
-                        p.isFile = true;
-                    } else if("file".equals(p.baseType)){
-                    	p.isFile = true;
-                    } else {
-                        p.notFile = true;
-                    }
-                    p.isFormParam = new Boolean(true);
                     formParams.add(p.copy());
                 }
                 if (p.required == null || !p.required) {
@@ -1719,6 +1707,7 @@ public class DefaultCodegen {
         CodegenParameter p = CodegenModelFactory.newInstance(CodegenModelType.PARAMETER);
         p.baseName = param.getName();
         p.description = escapeText(param.getDescription());
+        p.unescapedDescription = param.getDescription();
         if (param.getRequired()) {
             p.required = param.getRequired();
         }
@@ -1931,6 +1920,33 @@ public class DefaultCodegen {
         // set the parameter excample value
         // should be overridden by lang codegen
         setParameterExampleValue(p);
+
+        // Issue #2561 (neilotoole) : Set the is<TYPE>Param flags.
+        // This code has been moved to here from #fromOperation
+        // because these values should be set before calling #postProcessParameter.
+        // See: https://github.com/swagger-api/swagger-codegen/issues/2561
+        if (param instanceof QueryParameter) {
+            p.isQueryParam = true;
+        } else if (param instanceof PathParameter) {
+            p.required = true;
+            p.isPathParam = true;
+        } else if (param instanceof HeaderParameter) {
+            p.isHeaderParam = true;
+        } else if (param instanceof CookieParameter) {
+            p.isCookieParam = true;
+        } else if (param instanceof BodyParameter) {
+            p.isBodyParam = true;
+            p.isBinary = p.dataType.toLowerCase().startsWith("byte");
+        } else if (param instanceof FormParameter) {
+            if ("file".equalsIgnoreCase(((FormParameter) param).getType())) {
+                p.isFile = true;
+            } else if("file".equals(p.baseType)){
+                p.isFile = true;
+            } else {
+                p.notFile = true;
+            }
+            p.isFormParam = true;
+        }
 
         postProcessParameter(p);
         return p;
@@ -2303,18 +2319,28 @@ public class DefaultCodegen {
      */
     @SuppressWarnings("static-method")
     public String removeNonNameElementToCamelCase(String name) {
-        String nonNameElementPattern = "[-_:;#]";
-        name = StringUtils.join(Lists.transform(Lists.newArrayList(name.split(nonNameElementPattern)), new Function<String, String>() { // FIXME: a parameter should not be assigned. Also declare the methods parameters as 'final'.
+        return removeNonNameElementToCamelCase(name, "[-_:;#]");
+    }
+
+    /**
+     * Remove characters that is not good to be included in method name from the input and camelize it
+     *
+     * @param name string to be camelize
+     * @param nonNameElementPattern a regex pattern of the characters that is not good to be included in name
+     * @return camelized string
+     */
+    protected String removeNonNameElementToCamelCase(final String name, final String nonNameElementPattern) {
+        String result = StringUtils.join(Lists.transform(Lists.newArrayList(name.split(nonNameElementPattern)), new Function<String, String>() {
             @Nullable
             @Override
             public String apply(String input) {
                 return StringUtils.capitalize(input);
             }
         }), "");
-        if (name.length() > 0) {
-            name = name.substring(0, 1).toLowerCase() + name.substring(1);
+        if (result.length() > 0) {
+            result = result.substring(0, 1).toLowerCase() + result.substring(1);
         }
-        return name;
+        return result;
     }
 
     /**
