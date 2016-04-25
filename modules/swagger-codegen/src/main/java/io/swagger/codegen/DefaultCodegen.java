@@ -1889,7 +1889,7 @@ public class DefaultCodegen {
         // set the example value
         // if not specified in x-example, generate a default value
         if (p.vendorExtensions.containsKey("x-example")) {
-            p.example = (String) p.vendorExtensions.get("x-example");
+            p.example = Objects.toString(p.vendorExtensions.get("x-example"));
         } else if (Boolean.TRUE.equals(p.isString)) {
             p.example = p.paramName + "_example";
         } else if (Boolean.TRUE.equals(p.isBoolean)) {
@@ -2307,6 +2307,12 @@ public class DefaultCodegen {
                 addImport(m, cp.baseType);
                 addImport(m, cp.complexType);
                 vars.add(cp);
+
+                if (Boolean.TRUE.equals(cp.required)) { // if required, add to the list "requiredVars"
+                    m.requiredVars.add(cp);
+                } else { // else add to the list "optionalVars" for optional property
+                    m.optionalVars.add(cp);
+                }
             }
         }
     }
