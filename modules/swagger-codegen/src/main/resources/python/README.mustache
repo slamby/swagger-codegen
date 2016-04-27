@@ -52,33 +52,65 @@ Please follow the [installation procedure](#installation--usage) and then run th
 
 ```python
 import time
-import {{{packageName}}}
-from {{{packageName}}}.rest import ApiException
+import swagger_client
+from swagger_client.rest import ApiException
 from pprint import pprint
-{{#apiInfo}}{{#apis}}{{#-first}}{{#operations}}{{#operation}}{{#-first}}{{#hasAuthMethods}}{{#authMethods}}{{#isBasic}}
-# Configure HTTP basic authorization: {{{name}}}
-{{{packageName}}}.configuration.username = 'YOUR_USERNAME'
-{{{packageName}}}.configuration.password = 'YOUR_PASSWORD'{{/isBasic}}{{#isApiKey}}
-# Configure API key authorization: {{{name}}}
-{{{packageName}}}.configuration.api_key['{{{keyParamName}}}'] = 'YOUR_API_KEY'
-# Uncomment below to setup prefix (e.g. BEARER) for API key, if needed
-# {{{packageName}}}.configuration.api_key_prefix['{{{keyParamName}}}'] = 'BEARER'{{/isApiKey}}{{#isOAuth}}
-# Configure OAuth2 access token for authorization: {{{name}}}
-{{{packageName}}}.configuration.access_token = 'YOUR_ACCESS_TOKEN'{{/isOAuth}}{{/authMethods}}
-{{/hasAuthMethods}}
-# create an instance of the API class
-api_instance = {{{packageName}}}.{{{classname}}}
-{{#allParams}}{{paramName}} = {{{example}}} # {{{dataType}}} | {{{description}}}{{^required}} (optional){{/required}}{{#defaultValue}} (default to {{{.}}}){{/defaultValue}}
-{{/allParams}}
 
-try:
-{{#summary}}    # {{{.}}}
-{{/summary}}    {{#returnType}}api_response = {{/returnType}}api_instance.{{{operationId}}}({{#allParams}}{{#required}}{{paramName}}{{/required}}{{^required}}{{paramName}}={{paramName}}{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){{#returnType}}
-    pprint(api_response){{/returnType}}
-except ApiException as e:
-    print "Exception when calling {{classname}}->{{operationId}}: %s\n" % e
-{{/-first}}{{/operation}}{{/operations}}{{/-first}}{{/apis}}{{/apiInfo}}
+client = swagger_client.ApiClient("http://<api_host>/")
+client.set_default_header("Authorization", "Slamby <api_secret>")
 ```
+
+Getting DataSet list
+
+```python
+dataset_api = swagger_client.DataSetApi(client)
+data_sets = dataset_api.get_data_sets()
+```
+
+Selecting a DataSet for work
+
+```python
+client.set_default_header("X-DataSet", "<my_dataset>");
+```
+
+Get Tag list
+
+```python
+tag_api = swagger_client.TagApi(client)
+tags = tag_api.get_tags()
+```
+
+Creating a new Tag
+
+```python
+try:
+    tag = swagger_client.Tag()
+    tag.id = "123"
+    tag.name = "New tag"
+    
+    tag_api.create_tag(tag = tag)
+except ApiException as e:
+    print ("Exception when calling TagApi->create_tag: %s\n" % e)
+```
+
+Get a Document
+
+```python
+document_api = swagger_client.DocumentApi(client)
+document = document_api.get_document("123456")
+```
+
+Update a Document
+
+```python
+try:
+    document["language"] = "hu"
+    document_api.update_document(id="123456", document = document)
+except ApiException as e:
+    print ("Exception when calling DocumentApi->update_document: %s\n" % e)
+```
+
+
 
 ## Documentation for API Endpoints
 
