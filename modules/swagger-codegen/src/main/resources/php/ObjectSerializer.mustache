@@ -64,6 +64,9 @@ class ObjectSerializer
             }
             return $data;
         } elseif (is_object($data)) {
+            if (!isset(class_implements($data)["ArrayAccess"])){
+                return $data;
+            }
             $values = array();
             foreach (array_keys($data::swaggerTypes()) as $property) {
                 $getter = $data::getters()[$property];
