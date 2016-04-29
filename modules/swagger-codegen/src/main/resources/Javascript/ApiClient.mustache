@@ -39,8 +39,7 @@
      * The authentication methods to be included for all API calls.
      * @type {Array.<String>}
      */
-{{/emitJSDoc}}{{=< >=}}    this.authentications = {
-      'slamby': {type: 'slamby'}<#authMethods><#isBasic>
+{{/emitJSDoc}}{{=< >=}}    this.authentications = {<#authMethods><#isBasic>
       '<name>': {type: 'basic'}</isBasic><#isApiKey>
       '<name>': {type: 'apiKey', 'in': <#isKeyInHeader>'header'</isKeyInHeader><^isKeyInHeader>'query'</isKeyInHeader>, name: '<keyParamName>'}</isApiKey><#isOAuth>
       '<name>': {type: 'oauth2'}</isOAuth><#hasMore>,</hasMore></authMethods>
@@ -59,13 +58,6 @@
      * @default 60000
      */
     this.timeout = 60000;
-    
-    /**
-     * The DataSet used with all API calls.
-     * @type {String}
-     * @default ''
-     */
-    this.dataSet = '';
   };
 
 {{#emitJSDoc}}  /**
@@ -286,11 +278,6 @@
             request.set({'Authorization': 'Bearer ' + auth.accessToken});
           }
           break;
-        case 'slamby':
-          if (auth.apiKey) {
-            request.set({'Authorization': 'Slamby ' + auth.apiKey});
-          }
-          break;
         default:
           throw new Error('Unknown authentication type: ' + auth.type);
       }
@@ -361,8 +348,7 @@
 
     // set header parameters
     request.set(this.defaultHeaders)
-           .set(this.normalizeParams(headerParams))
-           .set({'X-DataSet': this.dataSet});
+           .set(this.normalizeParams(headerParams));
 
     // set request timeout
     request.timeout(this.timeout);
@@ -438,7 +424,7 @@
    * all properties on <code>data<code> will be converted to this type.
    * @returns An instance of the specified type.
    */
-{{/emitJSDoc}}  exports.convertToType = function(data, type) {
+{{/emitJSDoc}}  exports.convertToType = function(data, type) {   
     switch (type) {
       case 'Boolean':
         return Boolean(data);
@@ -447,11 +433,15 @@
       case 'Number':
         return parseFloat(data);
       case 'String':
+        if (data === null) {
+          return null;
+        }
+        
         return String(data);
       case 'Date':
         return this.parseDate(String(data));
       default:
-        if (type === Object) {
+        if (type === Object || (type.prototype && type.prototype.typeName === 'ModelObject')) {
           // generic object, return directly
           return data;
         } else if (typeof type === 'function') {

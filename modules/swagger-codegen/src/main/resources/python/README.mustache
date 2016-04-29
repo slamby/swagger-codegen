@@ -52,18 +52,18 @@ Please follow the [installation procedure](#installation--usage) and then run th
 
 ```python
 import time
-import swagger_client
-from swagger_client.rest import ApiException
+import slamby_sdk
+from slamby_sdk.rest import ApiException
 from pprint import pprint
 
-client = swagger_client.ApiClient("http://<api_host>/")
+client = slamby_sdk.ApiClient("http://<api_host>/")
 client.set_default_header("Authorization", "Slamby <api_secret>")
 ```
 
 Getting DataSet list
 
 ```python
-dataset_api = swagger_client.DataSetApi(client)
+dataset_api = slamby_sdk.DataSetApi(client)
 data_sets = dataset_api.get_data_sets()
 ```
 
@@ -76,7 +76,7 @@ client.set_default_header("X-DataSet", "<my_dataset>");
 Get Tag list
 
 ```python
-tag_api = swagger_client.TagApi(client)
+tag_api = slamby_sdk.TagApi(client)
 tags = tag_api.get_tags()
 ```
 
@@ -84,7 +84,7 @@ Creating a new Tag
 
 ```python
 try:
-    tag = swagger_client.Tag()
+    tag = slamby_sdk.Tag()
     tag.id = "123"
     tag.name = "New tag"
     
@@ -96,7 +96,7 @@ except ApiException as e:
 Get a Document
 
 ```python
-document_api = swagger_client.DocumentApi(client)
+document_api = slamby_sdk.DocumentApi(client)
 document = document_api.get_document("123456")
 ```
 

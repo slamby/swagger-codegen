@@ -36,6 +36,8 @@
 {{/interfaceModels}}{{/useInheritance}}{{#vars}}{{#required}}    this['{{baseName}}'] = {{name}};{{/required}}
 {{/vars}}  };
 
+exports.prototype.typeName = '{{classname}}';
+
 {{#emitJSDoc}}  /**
    * Constructs a <code>{{classname}}</code> from a plain JavaScript object, optionally creating a new instance.
    * Copies all relevant properties from <code>data</code> to <code>obj</code> if supplied or a new instance if not.
@@ -44,6 +46,9 @@
    * @return {{=< >=}}{module:<#modelPackage><modelPackage>/</modelPackage><classname>}<={{ }}=> The populated <code>{{classname}}</code> instance.
    */
 {{/emitJSDoc}}  exports.constructFromObject = function(data, obj) {
+    if (exports.prototype.typeName === 'ModelObject') { {{!// TODO: should not handle here only in ApiClient}}
+      return data;
+    }
     if (data) { {{!// TODO: support polymorphism: discriminator property on data determines class to instantiate.}}
       obj = obj || new exports();
 {{#useInheritance}}{{#parent}}      {{.}}.constructFromObject(data, obj);{{/parent}}
