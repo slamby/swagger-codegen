@@ -4,15 +4,16 @@ All URIs are relative to *http://petstore.swagger.io/v2*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**test_endpoint_parameters**](FakeApi.md#test_endpoint_parameters) | **POST** /fake | Fake endpoint for testing various parameters
+[**test_endpoint_parameters**](FakeApi.md#test_endpoint_parameters) | **POST** /fake | Fake endpoint for testing various parameters 假端點 偽のエンドポイント 가짜 엔드 포인트 
+[**test_enum_query_parameters**](FakeApi.md#test_enum_query_parameters) | **GET** /fake | To test enum query parameters
 
 
 # **test_endpoint_parameters**
 > test_endpoint_parameters(number, double, string, byte, opts)
 
-Fake endpoint for testing various parameters
+Fake endpoint for testing various parameters 假端點 偽のエンドポイント 가짜 엔드 포인트 
 
-Fake endpoint for testing various parameters
+Fake endpoint for testing various parameters 假端點 偽のエンドポイント 가짜 엔드 포인트 
 
 ### Example
 ```ruby
@@ -21,7 +22,7 @@ require 'petstore'
 
 api_instance = Petstore::FakeApi.new
 
-number = "number_example" # String | None
+number = 3.4 # Float | None
 
 double = 1.2 # Float | None
 
@@ -41,7 +42,7 @@ opts = {
 }
 
 begin
-  #Fake endpoint for testing various parameters
+  #Fake endpoint for testing various parameters 假端點 偽のエンドポイント 가짜 엔드 포인트 
   api_instance.test_endpoint_parameters(number, double, string, byte, opts)
 rescue Petstore::ApiError => e
   puts "Exception when calling FakeApi->test_endpoint_parameters: #{e}"
@@ -52,7 +53,7 @@ end
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **number** | **String**| None | 
+ **number** | **Float**| None | 
  **double** | **Float**| None | 
  **string** | **String**| None | 
  **byte** | **String**| None | 
@@ -75,8 +76,57 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/xml, application/json
+ - **Content-Type**: application/xml; charset=utf-8, application/json; charset=utf-8
+ - **Accept**: application/xml; charset=utf-8, application/json; charset=utf-8
+
+
+
+# **test_enum_query_parameters**
+> test_enum_query_parameters(opts)
+
+To test enum query parameters
+
+### Example
+```ruby
+# load the gem
+require 'petstore'
+
+api_instance = Petstore::FakeApi.new
+
+opts = { 
+  enum_query_string: "-efg", # String | Query parameter enum test (string)
+  enum_query_integer: 3.4, # Float | Query parameter enum test (double)
+  enum_query_double: 1.2 # Float | Query parameter enum test (double)
+}
+
+begin
+  #To test enum query parameters
+  api_instance.test_enum_query_parameters(opts)
+rescue Petstore::ApiError => e
+  puts "Exception when calling FakeApi->test_enum_query_parameters: #{e}"
+end
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **enum_query_string** | **String**| Query parameter enum test (string) | [optional] [default to -efg]
+ **enum_query_integer** | **Float**| Query parameter enum test (double) | [optional] 
+ **enum_query_double** | **Float**| Query parameter enum test (double) | [optional] 
+
+### Return type
+
+nil (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
 
 
 
